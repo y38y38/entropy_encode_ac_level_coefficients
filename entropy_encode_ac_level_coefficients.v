@@ -27,43 +27,6 @@ output reg is_minus,
 output reg is_minus_n
 
 );
-
-function [31:0] getabs;
-	input [31:0] value;
-	begin
-		if (value[31] != 1'b1) begin
-			getabs = value;
-		end else begin
-			getabs =  (~(value - 1));
-		end
-	end
-endfunction
-
-function [31:0] getfloorclog2;
-	input [31:0] val;
-	begin
-		reg [31:0] in_val;
-		in_val = val;
-		for (getfloorclog2=0; in_val>0; getfloorclog2=getfloorclog2+1) begin
-			in_val = in_val>>1;
-		end
-		getfloorclog2 = getfloorclog2 - 1;
-	end
-endfunction
-
-
-
-function [31:0] bitmask;
-	input [31:0] val;
-	reg [31:0] index = 6'h0;
-	begin
-		bitmask = 32'h1;
-		for(index=1;index<val;index=index+1) begin
-			bitmask = (bitmask<<1) | 1;
-		end
-	end
-endfunction
-
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		is_minus <= 1'b0;
@@ -91,7 +54,11 @@ always @(posedge clk, negedge reset_n) begin
 
 	end else begin
 		if (Coeff != 0) begin
-			abs_level_minus_1 <= getabs(Coeff) -1;
+			if (Coeff[31] != 1'b1) begin
+				abs_level_minus_1 <= Coeff - 1;
+			end else begin
+				abs_level_minus_1 <=  (~(Coeff - 1)) - 1;
+			end
 			if (first) begin
 				previousLevel <= 32'h1;
 				is_expo_golomb_code <= 2'h2;
@@ -104,8 +71,6 @@ always @(posedge clk, negedge reset_n) begin
 						is_add_setbit<=2'h0;
 						k <= 0;
 
-						//golomb_rice_codeの場合qをif文で使用するため、1clock前の代入が必要
-						//q = abs_level_minus_1;
 						abs_level_minus_1_n <= abs_level_minus_1;
 					end else begin
 						is_expo_golomb_code <= 2'b1;
@@ -118,7 +83,6 @@ always @(posedge clk, negedge reset_n) begin
 						is_expo_golomb_code <= 2'b0;
 						is_add_setbit<=2'h0;
 						k <= 0;
-						//q = abs_level_minus_1;
 						abs_level_minus_1_n <= abs_level_minus_1;
 
 					end else begin
@@ -132,7 +96,6 @@ always @(posedge clk, negedge reset_n) begin
 						is_expo_golomb_code <= 2'b0;
 						is_add_setbit<=2'h0;
 						k <= 0;
-						//q = abs_level_minus_1;
 						abs_level_minus_1_n <= abs_level_minus_1;
 
 					end else begin
@@ -170,32 +133,6 @@ end
 
 
 
-//assign LENGTH = codeword_length;
-
-
-//reg [31:0] codeword_length = 32'h0;
-/*
-//exp_golomb_code
-always @(posedge clk, negedge reset_n) begin
-	if (!reset_n) begin
-		output_enable = 32'h0;
-		sum = 32'h0;
-	end else begin
-		if (is_expo_golomb_code == 2'b1) begin
-			q = getfloorclog2((abs_level_minus_1_n + (1<<(k)))) - k;
-			//q =  input_data + 16'h1;
-			if (is_minus_n) begin
-				sum[31:0] = (abs_level_minus_1_n + (1<<k))<<1|1;
-			end else begin
-				sum[31:0] = (abs_level_minus_1_n + (1<<k))<<1|0;
-			end
-			codeword_length = (2 * q) + k + 2 + is_add_setbit;
-			output_enable = bitmask(codeword_length);
-		end
-	end
-end
-*/
-
 wire [31:0] exp_golomb_sum;
 wire [31:0] exp_golomb_codeword_length;
 
@@ -228,55 +165,6 @@ golomb_rice_code golomb_rice_code_inst(
 //	.sum(sum)
 
 );
-/*
-//golomb_rice_code
-always @(posedge clk, negedge reset_n) begin
-	if (!reset_n) begin
-		output_enable = 32'h0;
-		sum = 32'h0;
-		codeword_length = 32'h0;
-	end else begin
-		if (is_expo_golomb_code == 2'b0) begin
-			//q=と、if(qのタイミング)
-//			q = abs_level_minus_1 >> k;
-			if (k==0) begin
-				if(q!=0) begin
-					if (is_minus_n) begin
-						sum = 3;
-						
-					end else begin
-						sum = 2;
-					end
-					codeword_length = q+2;
-					output_enable = bitmask(codeword_length);
-				end else begin
-					if (is_minus_n) begin
-						sum = 3;
-						
-					end else begin
-						sum = 2;
-					end
-					codeword_length = 2;
-					output_enable = 1;
-				end
-			end else begin
-				// 0x4 | 1 & 0x3
-				// 0x5 
-				if (is_minus_n) begin
-					sum = (1<<k) | (abs_level_minus_1_n & ((1<<k) - 1));
-					sum = sum<<1|1;
-				end else begin
-					sum = sum<<1|0;
-				end
-
-//				sum = 20'h111 ;//(1<<k) | (abs_level_minus_1 & ((1<<k) - 1));
-				codeword_length = q + 2 + k;
-				output_enable = bitmask( codeword_length);	
-			end
-		end
-	end
-end
-*/
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		codeword_length <= 32'h0;
