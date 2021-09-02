@@ -142,7 +142,7 @@ exp_golomb_code exp_golomb_code_inst(
 	.val(abs_level_minus_1_n),
 	.is_add_setbit(is_add_setbit),
 	.k(k),
-	.is_ac(1),
+	.is_ac_level(1),
 	.is_ac_minus_n(is_minus_n),
 	.sum_n(exp_golomb_sum),
 	.codeword_length(exp_golomb_codeword_length)
@@ -157,7 +157,7 @@ golomb_rice_code golomb_rice_code_inst(
 	.clk(clk),
 	.k(k),
 	.val(abs_level_minus_1_n),
-	.is_ac(1),
+	.is_ac_level(1),
 	.is_minus_n(is_minus_n),
 	.sum_n(rice_sum),
 	.codeword_length(rice_codeword_length)

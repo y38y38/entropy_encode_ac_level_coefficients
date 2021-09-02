@@ -4,7 +4,7 @@ module exp_golomb_code(
 	input [31:0] val,
 	input [1:0] is_add_setbit,
 	input [2:0]k,
-	input is_ac,
+	input is_ac_level,
 	input is_ac_minus_n,
 	output reg [31:0] sum_n,
 	output reg [31:0] codeword_length,
@@ -36,7 +36,7 @@ end
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 	end else begin
-		if (is_ac) begin
+		if (is_ac_level) begin
 			if (is_ac_minus_n) begin
 				sum <= (val + (1<<k))<<1|1;
 			end else begin
@@ -101,7 +101,7 @@ always @(posedge clk, negedge reset_n) begin
 //		if (is_add_setbit_n == 1'b1) begin
 //			codeword_length <= (2 * q) + k_n + 3;
 //		end else begin
-		if (is_ac) begin
+		if (is_ac_level) begin
 			codeword_length <= (2 * q) + k_n + 2 + is_add_setbit_n;
 		end else begin
 			codeword_length <= (2 * q) + k_n + 1 + is_add_setbit_n;
