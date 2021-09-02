@@ -2,7 +2,7 @@
 #include <iostream>
 #include <verilated.h>
 #include "Ventropy_encode_ac_level_coefficients.h"
-#include <verilated_fst_c.h> 
+//#include <verilated_fst_c.h> 
 
 
 
@@ -240,7 +240,7 @@ int i=0;
         for (block=0; block < numBlocks; block++) {
 //            level = coefficients[(block * MAX_COEFFICIENT_NUM_PER_BLOCK) + position] ;
             level = coefficients[i] ;
-//			printf("%d\n", level);
+			//printf("l %d\n", level);
 			i++;
 
             if (level != 0) {
@@ -287,18 +287,19 @@ int main(int argc, char** argv) {
 		fscanf(in, "%d", &vals[i]);
 	}
 	fclose(in);
-
-//	entropy_encode_ac_coefficients(vals, 32);
-//	return 0;
+#if 0
+	entropy_encode_ac_coefficients(vals, 32);
+	return 0;
+#endif
 //entropy_encode_dc_coefficients(vals);
 	// Instantiate DUT
 	Ventropy_encode_ac_level_coefficients *dut = new Ventropy_encode_ac_level_coefficients();
 	// Trace DUMP ON
 	Verilated::traceEverOn(true);
-	VerilatedFstC* tfp = new VerilatedFstC;
+	//VerilatedFstC* tfp = new VerilatedFstC;
 
-	dut->trace(tfp, 100);  // Trace 100 levels of hierarchy
-	tfp->open("simx.fst");
+	//dut->trace(tfp, 100);  // Trace 100 levels of hierarchy
+	//tfp->open("simx.fst");
 
 	// Format
 	dut->reset_n = 0;
@@ -308,7 +309,7 @@ int main(int argc, char** argv) {
 	while (time_counter < 10) {
 		dut->clk = !dut->clk; // Toggle clock
 		dut->eval();
-		tfp->dump(time_counter);  // 波形ダンプ用の記述を追加
+		//tfp->dump(time_counter);  // 波形ダンプ用の記述を追加
 		time_counter++;
 	}
 	// Release reset
@@ -359,10 +360,16 @@ printf("q =%d\n\n",dut->q);
 //					printf("end\n");
 //					break;
 //				}
-				dut->Coeff = vals[i%2016];
+				if (i<2016) {
+				    dut->Coeff = vals[i%2016];
+					//printf("l %d\n", dut->Coeff);
+                } else {
+				    dut->Coeff = 1;
+                }
+
 				i++;
 				if (i==2020) {
-					printf("d");
+					//printf("d");
 					break;
 				}
 //				state = 1;
@@ -392,11 +399,11 @@ printf("q =%d\n\n",dut->q);
 
 			}
 		}
-		tfp->dump(time_counter);  // 波形ダンプ用の記述を追加
+		//tfp->dump(time_counter);  // 波形ダンプ用の記述を追加
 		time_counter++;
 //		break;
 	}
 
 	dut->final();
-	tfp->close(); 
+	//tfp->close(); 
 }
