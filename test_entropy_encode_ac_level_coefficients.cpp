@@ -346,6 +346,12 @@ printf("previousLevel= %d\n", dut->previousLevel);
 printf("abs_level_minus_1= %d\n", dut->abs_level_minus_1);
 printf("abs_level_minus_1_n= %d\n", dut->abs_level_minus_1_n);
 printf("is_expo_golomb_code= %d\n", dut->is_expo_golomb_code);
+printf("is_expo_golomb_code_n= %d\n", dut->is_expo_golomb_code_n);
+printf("is_expo_golomb_code_n_n= %d\n", dut->is_expo_golomb_code_n_n);
+printf("codeword_length= %d\n", dut->codeword_length);
+printf("codeword_length_n= %d\n", dut->codeword_length_n);
+printf("codeword_length_n_n= %d\n", dut->codeword_length_n_n);
+
 printf("first= %d\n", dut->first);
 printf("is_minus= %d\n", dut->is_minus);
 printf("is_minus_n= %d\n", dut->is_minus_n);
@@ -389,10 +395,11 @@ printf("q =%d\n\n",dut->q);
 //				dut->k, dut->input_data, dut->sum, dut->CODEWORD_LENGTH, dut->output_enable,  sum, codeword_length);
 
 //			}
-			if (dut->codeword_length != 0)
+			if (dut->codeword_length_n_n != 0)
 			 {
 //			printf("s %x %d %d\n", dut->sum, dut->codeword_length, i);
-			printf("s %x %d\n", dut->sum, dut->codeword_length);
+			printf("s %x %d\n", dut->sum_n_n, dut->codeword_length_n_n);
+			//printf("e %d\n", dut->is_expo_golomb_code_n_n);
 //			printf("s %x %d %x\n", dut->sum, dut->codeword_length,dut->output_enable );
 //printf("q =%d\n",dut->q);
 //printf("is_expo_golomb_code =%d\n",dut->is_expo_golomb_code);
